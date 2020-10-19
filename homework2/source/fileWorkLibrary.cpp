@@ -28,8 +28,7 @@ int fileCopy(const char* src, const char* dest) {
         std::cout << "can't open or create destination file\n";
         return errno;
     }
-    void* buffer = (void*) malloc(BUF_SIZE);    // make buffer for copying bytes, there's void type
-                                                // 'couse I have no info about file
+    void* buffer = (void*) malloc(BUF_SIZE);    // make buffer for copying bytes, there's void type becouse I have no info about file
     off_t tmp = lseek(srcD, 0, 0);   // set cursor at the begin of file
     /* test, if can't move the cursor, and exit eith an error */
     if(tmp == -1) {
@@ -37,9 +36,7 @@ int fileCopy(const char* src, const char* dest) {
         return errno;
     }
     while(true) {
-        ssize_t readCount = read(srcD, buffer, BUF_SIZE);   // read BUF_SIZE bytes from source file
-                                                            //and write it in buffer
-                                                            //count readed bytes will be in readCount
+        ssize_t readCount = read(srcD, buffer, BUF_SIZE);   // read BUF_SIZE bytes from source file  and write it in buffer count readed bytes will be in readCount
         /* test, if can't read from source file and exit with an error */
         if(readCount == -1) {
             std::cout << "can't read from source file\n";
@@ -49,10 +46,7 @@ int fileCopy(const char* src, const char* dest) {
         if(readCount == 0) {
             break;
         }
-        ssize_t writeCount = write(destD, buffer, readCount);   // write all readed bytes in
-                                                                //destination file from buffer
-                                                                //and count of written bytes
-                                                                //will be in writeCount
+        ssize_t writeCount = write(destD, buffer, readCount);   // write all readed bytes in destination file from buffer and count of written bytes will be in writeCount
         /* test, if can't write and exit with an error */
         if(writeCount == -1) {
             std::cout << "can't write in destination file\n";
@@ -86,11 +80,9 @@ int printFileSize(const char* path, std::ostream& out) {
         out << "Something were wrong, can't open file\n";
         return errno;
     }
-    off_t size = lseek(fD, 0, SEEK_END);  // this will move the cursor from the begin to
-                                          // end of file and count distance
+    off_t size = lseek(fD, 0, SEEK_END);  // this will move the cursor from the begin to end of file and count distance
     out << "The phisical size of the \"" << path << "\" is: " << size << '\n';
-    size = lseek(fD, 0, SEEK_HOLE);   // this will move the cursor from the begin to
-                                        // end of "hole" (may be it not exist)
+    size = lseek(fD, 0, SEEK_HOLE);   // this will move the cursor from the begin to end of "hole" (may be it not exist)
     out << "The logical size of the \"" << path << "\" is: " << size << '\n';
     close(fD);
     return 0;

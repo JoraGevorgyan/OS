@@ -1,7 +1,5 @@
 SOURCES := $(wildcard source/*.cpp)  #defina all ./cpp files as "SOURCES"
-OBJECTS := $(patsubst source/%.cpp, object/%.o, $(SOURCES))	#make name for all object files
-															#like *.o, and
-															#define as "OBJECTS"
+OBJECTS := $(patsubst source/%.cpp, object/%.o, $(SOURCES))	#make name for all object files like *.o, and define as "OBJECTS"
 
 all: copy   #project names "copy"
 
@@ -14,8 +12,7 @@ object/copyFiles.o: source/copyFiles.cpp source/fileWorkLibrary.hpp
 
 object/fileWorkLibrary.o: source/fileWorkLibrary.cpp
 	mkdir -p object
-	g++ -c source/fileWorkLibrary.cpp -o object/fileWorkLibrary.o   #compile until linker
-																	# and open in*.o file
+	g++ -c source/fileWorkLibrary.cpp -o object/fileWorkLibrary.o   #compile until linker and open in*.o file
 
 
 clean: #remove "object" directory, that contains object files
