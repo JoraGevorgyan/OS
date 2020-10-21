@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
         std::cout << "fileCopy  returned an error\n";
         return copyFileRet;
     }
-    std::cout << "File successfully copied from \"" << argv[1] << "\", to \"" << argv[2] << "\"\n";
+    std::cout << "\nFile successfully copied from \"" << argv[1] << "\", to \"" << argv[2] << "\"\n\n";
     
     printRet = printFileSize(argv[2], std::cout);
     /* test, if can't print size and exit with an error */

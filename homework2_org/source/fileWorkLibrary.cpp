@@ -22,48 +22,86 @@ int fileCopy(const char* src, const char* dest) {
      * with "read and write" mode for user
      */
     int destD = open(dest, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
-
     /* test, if can't open file, and exit with an error */
     if(destD == -1) {
         std::cout << "can't open or create destination file\n";
         return errno;
     }
-    void* buffer = (void*) malloc(BUF_SIZE);    // make buffer for copying bytes, there's void type becouse I have no info about file
-    off_t tmp = lseek(srcD, 0, 0);   // set cursor at the begin of file
+    /* make buffer for copying bytes, there's void type becouse I have no info about file */
+    void* buffer = (void*) malloc(BUF_SIZE);
+    off_t cursor = lseek(srcD, 0, SEEK_SET);   // set cursor at the begin of file
     /* test, if can't move the cursor, and exit eith an error */
-    if(tmp == -1) {
+    if(cursor == -1) {
         std::cout << "can't move the cursor\n";
         return errno;
     }
-    while(true) {
-        ssize_t readCount = read(srcD, buffer, BUF_SIZE);   // read BUF_SIZE bytes from source file  and write it in buffer count readed bytes will be in readCount
-        /* test, if can't read from source file and exit with an error */
-        if(readCount == -1) {
-            std::cout << "can't read from source file\n";
-            return errno;
-        }
-        /*test, if there is no readed bytes from source, it means, that, it's end of file */
-        if(readCount == 0) {
-            break;
-        }
-        ssize_t writeCount = write(destD, buffer, readCount);   // write all readed bytes in destination file from buffer and count of written bytes will be in writeCount
-        /* test, if can't write and exit with an error */
-        if(writeCount == -1) {
-            std::cout << "can't write in destination file\n";
-            return errno;
+    int x = 4;   // while loop breaking
+    while(x--) {
+        /*move the cursor into the next data*/
+        off_t srcCursor = lseek(srcD, SEEK_CUR - 1, SEEK_DATA);
+        
+        std::cout << "\n42 :: " << srcCursor << '\n';
+
+        /*make the hole in destination from current, in the same count, that was in the source*/
+        off_t destCursor = lseek(destD, srcCursor, SEEK_END);
+
+        std::cout << "\n47 :: " << destCursor << '\n';
+
+        cursor = lseek(srcD, SEEK_CUR - 1, SEEK_SET); //save the value of current
+
+        std::cout << "\n52::" << cursor << '\n';
+
+        /*move the cursor into the next hole, and count of date will be written in srcCursor*/
+        srcCursor = lseek(srcD, SEEK_CUR - 1, SEEK_HOLE);
+        
+        std::cout << "\n53 :: " << srcCursor << '\n';
+
+        /*move the cursor into the last readen bytes*/
+        cursor = lseek(srcD, cursor, SEEK_SET);
+
+        std::cout << "\n58:: " << cursor << '\n';
+
+        /*
+         * if srcCursor > BUF_SIZE, I need read and write
+         * just BUF_SIZE bytes, but else
+         * I need read and write anly $srcCount bytes
+         * and then continue
+         */
+        if(srcCursor > BUF_SIZE) {
+            ssize_t readCount = read(srcD, buffer, BUF_SIZE);
+            if(readCount == -1) {
+                std::cout << "can't read from source\n";
+                return errno;
+            }
+            ssize_t writeCount = write(destD, buffer, readCount);
+            if(writeCount == -1) {
+                std::cout << "can't write in the destination\n";
+                return errno;
+            }
+        } else {
+            ssize_t readCount = read(srcD, buffer, srcCursor);
+
+            std::cout << "readCount == " << readCount << '\n';
+
+            if(readCount == -1) {
+                std::cout << "can't read from source\n";
+                return errno;
+            }
+
+            cursor = lseek(srcD, 0, SEEK_CUR);
+            std::cout << "\n85 :: " << cursor << '\n';
+
+            /*it means, that's end of file*/
+            if(readCount == 0) {
+                break;
+            }
+            ssize_t writeCount = write(destD, buffer, readCount);
+            if(writeCount == -1) {
+                std::cout << "can't write in the destination\n";
+                return errno;
+            }
         }
     }
-    /*
-     * just for testing *
-    tmp = lseek(destD, 44, SEEK_END);
-    std::cout << "\nlseek ::: " << tmp << "\n";
-    char arr[3] = "ab";
-    ssize_t wrC = write(destD, arr, 2);
-        if(wrC == -1) {
-            std::cout << "can't write in destination, after lseek\n";
-            return errno;
-        }
-    */
     free(buffer);
     close(srcD);
     close(destD);
@@ -72,19 +110,23 @@ int fileCopy(const char* src, const char* dest) {
 
 
 int printFileSize(const char* path, std::ostream& out) {
-
+    out << "size of the file\n\n";
+/*
     int fD = open(path, O_RDONLY);//open file in "read only" mode
 
-    /* test and exit with error code,  if can't open the file */
+    // test and exit with error code,  if can't open the file
     if(fD == -1) {
         out << "Something were wrong, can't open file\n";
         return errno;
     }
-    off_t size = lseek(fD, 0, SEEK_END);  // this will move the cursor from the begin to end of file and count distance
+    off_t size = lseek(fD, 0, SEEK_END);
     out << "The phisical size of the \"" << path << "\" is: " << size << '\n';
-    size = lseek(fD, 0, SEEK_HOLE);   // this will move the cursor from the begin to end of "hole" (may be it not exist)
+    size = lseek(fD, 0, SEEK_HOLE);
     out << "The logical size of the \"" << path << "\" is: " << size << '\n';
     close(fD);
     return 0;
+*/
+
 }
+
 
