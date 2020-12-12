@@ -53,6 +53,7 @@ int main() {
     int* arr = new int[arrSize];
 
     // fill an array with random integer numbers less than MAX_RAND_VALUE
+    srand(time(NULL));
     for(size_t i = 0; i < arrSize; ++i) {
         arr[i] = rand() % MAX_RAND_VALUE;
     }
